@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+  <section class="card">
+    <div class="h1">Missing database configuration</div>
+    <div class="muted" style="margin-top:.35rem">
+      {{ error }}
+    </div>
+
+    <div style="margin-top:1rem" class="muted">
+      Create a <code>.env</code> file in this project folder (same place as <code>app.py</code>) and set at least:
+      <code>DB_NAME</code> and <code>DB_TABLE</code>.
+    </div>
+
+    {% if safe_cfg %}
+      <div class="card" style="margin-top:1rem; background:rgba(15,22,48,.35)">
+        <div class="muted">What the app currently sees:</div>
+        <div style="margin-top:.6rem" class="muted">
+          <div><code>DB_HOST</code> = <b>{{ safe_cfg.DB_HOST }}</b></div>
+          <div><code>DB_PORT</code> = <b>{{ safe_cfg.DB_PORT }}</b></div>
+          <div><code>DB_USER</code> = <b>{{ safe_cfg.DB_USER }}</b></div>
+          <div><code>DB_NAME</code> = <b>{{ safe_cfg.DB_NAME }}</b></div>
+          <div><code>DB_TABLE</code> = <b>{{ safe_cfg.DB_TABLE }}</b></div>
+          <div><code>DB_PASSWORD</code> = <b>{{ "set" if safe_cfg.DB_PASSWORD_SET else "NOT set" }}</b></div>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="card" style="margin-top:1rem; background:rgba(15,22,48,.35)">
+      <div class="muted">
+        You can copy from <code>{{ env_example_path }}</code> and edit these values:
+      </div>
+      <div style="margin-top:.6rem">
+        {% for v in required_vars %}
+          <code style="margin-right:.35rem">{{ v }}</code>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endblock %}

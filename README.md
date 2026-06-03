@@ -1,19 +1,31 @@
-# Santiment-Analysis-Project
-This project is based on Sentiment Analysis, which is used to analyze textual data and identify whether the sentiment expressed is positive, negative, or neutral. The purpose of this project is to extract meaningful insights from text data and present the results in an understandable and interactive way.
-The project includes collecting data, cleaning and preprocessing text, analyzing sentiment patterns, storing and managing data, and creating visual reports for better decision-making. By using data analysis and visualization techniques, the project helps understand opinions, customer feedback, and overall sentiment trends.
+# Flask + MySQL Data UI (Search / Filter / Sort)
 
-Tools and Technologies Used
+## Setup
 
-Microsoft Excel – Used for data collection, initial cleaning, organizing datasets, and preparing data for analysis.
+1) Create and activate a virtual environment (recommended).
 
-Python – Used to perform sentiment analysis, data preprocessing, text analysis, and generating prediction results.
+2) Install dependencies:
 
-SQL – Used for storing, managing, and querying structured data efficiently.
+```bash
+pip install -r requirements.txt
+```
 
-Power BI – Used to create interactive dashboards and visualize sentiment analysis results through charts and reports.
+3) Create a `.env` file (copy from `.env.example`) and set:
+- `DB_NAME`
+- `DB_TABLE`
+- `DB_USER`
+- `DB_PASSWORD`
 
-Visual Studio Code (VS Code) – Used as the development environment for writing and managing Python and SQL code.
+## Run
 
-Project Outcome
+```bash
+python app.py
+```
 
-The project successfully transformed raw text data into meaningful sentiment insights and displayed the results through interactive visualizations, enabling better understanding of user opinions and data-driven decision-making.
+Open the UI at `http://127.0.0.1:5000/`.
+
+## DSA concepts used
+
+- **Merge sort**: stable in-memory sorting for any selected column.
+- **Binary search**: exact-match filtering uses a sorted array + binary search to find the matching range.
+- **Pagination**: shows only the current page to keep rendering fast.

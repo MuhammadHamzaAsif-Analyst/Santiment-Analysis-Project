@@ -1,0 +1,192 @@
+{% extends "layout.html" %}
+{% block content %}
+  <section class="card">
+    <div class="card__row">
+      <div>
+        <div class="h1">Table: <code>{{ table }}</code></div>
+        <div class="muted">
+          Showing <b>{{ rows|length }}</b> rows (page <b>{{ page }}</b> / <b>{{ total_pages }}</b>) out of <b>{{ total }}</b> matched.
+          Loaded up to <b>{{ max_rows }}</b> rows from MySQL.
+        </div>
+      </div>
+      <div class="pill">
+        <div><b>DSA plan</b></div>
+        <div class="muted small">Strategy: {{ plan.strategy }}</div>
+        <div class="muted small">Sorted by: {{ plan.sorted_by if plan.sorted_by else "—" }}</div>
+        <div class="muted small">Binary search: {{ "yes" if plan.used_binary_search else "no" }}</div>
+      </div>
+    </div>
+
+    <form class="form" method="get" action="/">
+      <div class="grid">
+        <label>
+          <div class="label">Search</div>
+          <input name="q" value="{{ q }}" placeholder="type to search..." />
+        </label>
+        <label>
+          <div class="label">Search column</div>
+          <select name="search_col">
+            <option value="">All columns</option>
+            {% for c in columns %}
+              <option value="{{ c }}" {% if search_col == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <div class="label">Filter column (exact match)</div>
+          <select name="filter_col">
+            <option value="">None</option>
+            {% for c in columns %}
+              <option value="{{ c }}" {% if filter_col == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <div class="label">Filter value</div>
+          <input name="filter_val" value="{{ filter_val }}" placeholder="exact value..." />
+        </label>
+
+        <label>
+          <div class="label">Sort column</div>
+          <select name="sort_col">
+            <option value="">None</option>
+            {% for c in columns %}
+              <option value="{{ c }}" {% if sort_col == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <div class="label">Sort direction</div>
+          <select name="sort_dir">
+            <option value="asc" {% if sort_dir == "asc" %}selected{% endif %}>Ascending</option>
+            <option value="desc" {% if sort_dir == "desc" %}selected{% endif %}>Descending</option>
+          </select>
+        </label>
+        <label>
+          <div class="label">Page size</div>
+          <select name="page_size">
+            {% for n in [10, 25, 50, 100, 200] %}
+              <option value="{{ n }}" {% if page_size == n %}selected{% endif %}>{{ n }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label>
+          <div class="label">Page</div>
+          <input name="page" value="{{ page }}" inputmode="numeric" />
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="submit">Apply</button>
+        <a class="btn-secondary" href="/">Reset</a>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <div class="card__row">
+      <div>
+        <div class="h1">Data insights</div>
+        <div class="muted">Quick aggregates computed from the loaded rows.</div>
+      </div>
+    </div>
+
+    <div class="insights">
+      <div class="stat">
+        <div class="label">Average sentiment</div>
+        <div class="value">{{ "%.4f"|format(insights.avg_sentiment_score) if insights.avg_sentiment_score is not none else "—" }}</div>
+      </div>
+      <div class="stat">
+        <div class="label">Average engagement rate</div>
+        <div class="value">{{ "%.4f"|format(insights.avg_engagement_rate) if insights.avg_engagement_rate is not none else "—" }}</div>
+      </div>
+      <div class="stat">
+        <div class="label">Average toxicity</div>
+        <div class="value">{{ "%.4f"|format(insights.avg_toxicity_score) if insights.avg_toxicity_score is not none else "—" }}</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="mini">
+        <div class="mini__title">By platform</div>
+        {% for k,v in insights.by_platform %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+      <div class="mini">
+        <div class="mini__title">By sentiment</div>
+        {% for k,v in insights.by_sentiment %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+      <div class="mini">
+        <div class="mini__title">By topic</div>
+        {% for k,v in insights.by_topic %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+      <div class="mini">
+        <div class="mini__title">By emotion</div>
+        {% for k,v in insights.by_emotion %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="mini">
+        <div class="mini__title">Top hashtags</div>
+        {% for k,v in insights.top_hashtags %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+      <div class="mini">
+        <div class="mini__title">Top keywords</div>
+        {% for k,v in insights.top_keywords %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+      <div class="mini">
+        <div class="mini__title">Top mentions</div>
+        {% for k,v in insights.top_mentions %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+      <div class="mini">
+        <div class="mini__title">By day of week</div>
+        {% for k,v in insights.by_day_of_week %}
+          <div class="mini__row"><span>{{ k }}</span><b>{{ v }}</b></div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr>
+            {% for c in columns %}
+              <th>{{ c }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if rows|length == 0 %}
+            <tr>
+              <td colspan="{{ columns|length }}" class="muted">No results.</td>
+            </tr>
+          {% else %}
+            {% for r in rows %}
+              <tr>
+                {% for c in columns %}
+                  <td>{{ r.get(c) }}</td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+{% endblock %}
